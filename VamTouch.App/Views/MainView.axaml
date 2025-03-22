@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:VamTouch.App.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="VamTouch.App.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <Design.DataContext>
+    <!-- 这里使用设计时数据 -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+  <!-- 初始配置对话框或主界面 -->
+  <Panel>
+    <!-- 配置界面，在未配置时显示 -->
+    <Grid IsVisible="{Binding !IsConfigured}" Background="#f0f0f0">
+      <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" Width="400">
+        <TextBlock Text="请指定要管理的VAR文件目录" FontSize="18" HorizontalAlignment="Center" />
+        <TextBox Text="{Binding DirectoryPath}" Watermark="VAR文件目录路径" />
+        <Button Command="{Binding SelectDirectoryCommand}" HorizontalAlignment="Center"
+                Background="#0078d7" Foreground="White" Padding="20,10">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <PathIcon Data="M19 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4H10L12 6H19C20.1046 6 21 6.89543 21 8V18C21 19.1046 20.1046 20 19 20Z" />
+            <TextBlock Text="选择目录" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+    </Grid>
+
+    <!-- 主界面，在已配置时显示 -->
+    <Grid IsVisible="{Binding IsConfigured}" RowDefinitions="Auto,*,Auto">
+      <!-- 顶部工具栏 -->
+      <Border Grid.Row="0" Background="#0078d7" Padding="10">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <TextBlock Text="VamTouch" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding DirectoryPath}" Foreground="White" VerticalAlignment="Center" Margin="20,0,0,0" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+            <Button Command="{Binding RefreshVarDataCommand}" ToolTip.Tip="刷新" Background="Transparent" Foreground="White">
+              <PathIcon Data="M17.65 6.35C16.2 4.9 14.21 4 12 4C7.58 4 4.01 7.58 4.01 12C4.01 16.42 7.58 20 12 20C15.73 20 18.84 17.45 19.73 14H17.65C16.83 16.33 14.61 18 12 18C8.69 18 6 15.31 6 12C6 8.69 8.69 6 12 6C13.66 6 15.14 6.69 16.22 7.78L13 11H20V4L17.65 6.35Z" />
+            </Button>
+            <Button Command="{Binding ToggleViewModeCommand}" ToolTip.Tip="切换视图" Background="Transparent" Foreground="White">
+              <PathIcon Data="{Binding IsGridView, Converter={StaticResource ViewModeIconConverter}}" />
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- 主内容区域 -->
+      <Grid Grid.Row="1">
+        <!-- 列表视图 -->
+        <DataGrid IsVisible="{Binding !IsGridView}" ItemsSource="{Binding VarItems}" 
+                 SelectedItem="{Binding SelectedVarItem}" AutoGenerateColumns="False"
+                 GridLinesVisibility="Horizontal" BorderThickness="0" IsReadOnly="True">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="文件名" Binding="{Binding Filename}" Width="*" />
+            <DataGridTextColumn Header="创建者" Binding="{Binding Creator}" Width="120" />
+            <DataGridTextColumn Header="包名称" Binding="{Binding PackageName}" Width="200" />
+            <DataGridTextColumn Header="分类" Binding="{Binding Category}" Width="100" />
+            <DataGridTextColumn Header="导入日期" Binding="{Binding ImportDate, StringFormat=\{0:yyyy-MM-dd\}}" Width="100" />
+          </DataGrid.Columns>
+          <DataGrid.ContextMenu>
+            <ContextMenu>
+              <MenuItem Header="打开文件位置" Command="{Binding OpenFileLocationCommand}" />
+              <MenuItem Header="删除" Command="{Binding DeleteVarFileCommand}" />
+            </ContextMenu>
+          </DataGrid.ContextMenu>
+        </DataGrid>
+
+        <!-- 网格视图 -->
+        <ItemsControl IsVisible="{Binding IsGridView}" ItemsSource="{Binding VarItems}" Name="gridView">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:VarDataViewModel">
+              <Border Width="200" Height="200" Margin="10" Background="White" CornerRadius="5" BoxShadow="0 2 4 #20000000">
+                <Grid RowDefinitions="Auto,*,Auto">
+                  <TextBlock Grid.Row="0" Text="{Binding PackageName}" Margin="10" FontWeight="Bold" />
+                  <StackPanel Grid.Row="1" Margin="10,0">
+                    <TextBlock Text="{Binding Filename}" />
+                    <TextBlock Text="{Binding Creator}" />
+                    <TextBlock Text="{Binding Category}" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                    <Button ToolTip.Tip="打开位置"
+                            Background="Transparent"
+                            Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).OpenFileLocationCommand}"
+                            CommandParameter="{Binding}">
+                      <PathIcon Data="M19 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4H10L12 6H19C20.1046 6 21 6.89543 21 8V18C21 19.1046 20.1046 20 19 20Z" />
+                    </Button>
+                    <Button ToolTip.Tip="删除"
+                            Background="Transparent"
+                            Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).DeleteVarFileCommand}"
+                            CommandParameter="{Binding}">
+                      <PathIcon Data="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" />
+                    </Button>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Grid>
+
+      <!-- 底部状态栏与任务列表 -->
+      <Grid Grid.Row="2" RowDefinitions="Auto,Auto" Background="#f0f0f0">
+        <!-- 状态栏 -->
+        <Border Grid.Row="0" Padding="10">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" VerticalAlignment="Center" />
+            <ProgressBar Grid.Column="1" IsIndeterminate="{Binding IsLoading}" Width="100" />
+          </Grid>
+        </Border>
+
+        <!-- 任务列表 -->
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Tasks}" MaxHeight="150">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:TaskProgressViewModel">
+              <Grid ColumnDefinitions="*,Auto,Auto" Margin="10,5">
+                <StackPanel Grid.Column="0">
+                  <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                  <TextBlock Text="{Binding Status}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="{Binding Progress, StringFormat=\{0:0\}%}" VerticalAlignment="Center" Margin="10,0" />
+                <ProgressBar Grid.Column="2" Value="{Binding Progress}" Width="100" IsIndeterminate="{Binding IsIndeterminate}" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Grid>
+    </Grid>
+    
+    <!-- 加载指示器 -->
+    <Panel IsVisible="{Binding IsLoading}" Background="#80000000">
+      <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
+        <ProgressBar IsIndeterminate="True" Width="200" />
+        <TextBlock Text="{Binding StatusMessage}" Foreground="White" HorizontalAlignment="Center" />
+      </StackPanel>
+    </Panel>
+  </Panel>
+</UserControl> 

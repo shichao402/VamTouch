@@ -1,0 +1,58 @@
+{
+    "licenseType": "CC BY-NC-SA",
+    "creatorName": "TRASHINATOR",
+    "packageName": "left_right_prophet_cowgirl_sex_dlc",
+    "standardReferenceVersionOption": "Latest",
+    "scriptReferenceVersionOption": "Exact",
+    "description": "",
+    "credits": "",
+    "instructions": "",
+    "promotionalLink": "",
+    "programVersion": "1.22.0.12",
+    "contentList": [
+        "Saves/scene/left right prophet cowgirl sex dlc.jpg",
+        "Saves/scene/left right prophet cowgirl sex dlc.json",
+        "Custom/Sounds/PussySFX/WetIn19.wav",
+        "Custom/Scripts/SoftPhysicsSelectorV2.cs",
+        "Custom/Sounds/squishypie.mp3",
+        "Custom/Atom/Person/Clothing/Preset_leftrightcowgirl.vap",
+        "Custom/Atom/Person/Clothing/Preset_leftrightcowgirl.jpg"
+    ],
+    "dependencies": {
+        "TRASHINATOR.left_right_prophet_boob_job.1": {
+            "licenseType": "CC BY-NC-SA",
+            "dependencies": {
+                "AcidBubbles.Timeline.287": {
+                    "licenseType": "CC BY-SA",
+                    "dependencies": {}
+                },
+                "TRASHINATOR.so_young_appearance_look_preset.latest": {
+                    "licenseType": "CC BY-NC-SA",
+                    "dependencies": {
+                        "YameteOuji.YameteOuji_Under_PantyhoseWaist.latest": {
+                            "licenseType": "CC BY",
+                            "dependencies": {}
+                        },
+                        "AcidBubbles.Timeline.287": {
+                            "licenseType": "CC BY-SA",
+                            "dependencies": {}
+                        }
+                    }
+                }
+            }
+        },
+        "AcidBubbles.ImprovedPoV.1": {
+            "licenseType": "CC BY-SA",
+            "dependencies": {}
+        },
+        "Redeyes.Yet_Another_Cum_Pack.latest": {
+            "licenseType": "CC BY",
+            "dependencies": {}
+        }
+    },
+    "customOptions": {
+        "preloadMorphs": "false"
+    },
+    "hadReferenceIssues": "false",
+    "referenceIssues": []
+}

@@ -1,0 +1,17 @@
+/**/bin/**
+/**/obj/**
+/**/packages/**
+/**/artifacts/**
+/**/dist/**
+/**/out/**
+/**/temp/**
+/**/tmp/**
+/**/build/**
+/**/logs/**
+/**/*.log
+/**/.sass-cache
+/**/.vs
+/**/.idea
+/**/.DS_Store
+/**/Thumbs.db
+/**/desktop.ini
