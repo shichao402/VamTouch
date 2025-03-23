@@ -1,0 +1,69 @@
+name: .NET Build and Release
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        runtime: [win-x64, linux-x64, osx-x64]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore /p:Version=0.1.${{ github.run_number }}
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: Publish self-contained
+      run: dotnet publish ./VamTouch.App/VamTouch.App.csproj --configuration Release --no-restore --output ./output-selfcontained-${{ matrix.runtime }} --runtime ${{ matrix.runtime }} --self-contained true /p:Version=0.1.${{ github.run_number }} /p:ApplicationVersion=0.1.${{ github.run_number }}
+
+    - name: Archive self-contained output files
+      run: |
+        zip -r ./VamTouch-selfcontained-${{ matrix.runtime }}.zip ./output-selfcontained-${{ matrix.runtime }}
+
+    - name: Create release
+      if: ${{ matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/main' }}
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v0.1.${{ github.run_number }}
+        release_name: Release v0.1.${{ github.run_number }}
+        draft: false
+        prerelease: false
+
+    - name: Upload self-contained release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./VamTouch-selfcontained-${{ matrix.runtime }}.zip
+        asset_name: VamTouch-selfcontained-${{ matrix.runtime }}.zip
+        asset_content_type: application/zip
